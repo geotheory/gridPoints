@@ -1,0 +1,14 @@
+Package: gridPoints
+Type: Package
+Title: Functions for gridding point data
+Version: 0.1
+Date: 2015-02-02
+Author: Robin Edward
+Maintainer: Robin Edwards <geotheory1@gmail.com>
+Description: Package offers 2 functions to grid point data.  grid_points() is a flexible data aggregator.  grid_jitter() deterministically adjusts point positions to prevent over-plotting.
+License: GPL-2
+Imports:
+    ggplot2,
+    plyr,
+    gridExtra,
+    clue

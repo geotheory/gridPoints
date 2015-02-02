@@ -11,7 +11,7 @@
 #' @export
 #' @example examples/grid_jitter_examples.R
 grid_jitter = function(x, y=NULL, nx=50, ny=NULL, tol=5, plotresults=TRUE, file=NULL, w=10, h=10){
-  if(plotresults) require(ggplot2)
+  if(plotresults) suppressMessages(library(ggplot2))
   if(is.null(ny)) ny = nx
   col_names = row_names = NULL
   if(class(x) %in% c("data.frame","matrix")){

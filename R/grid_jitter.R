@@ -20,7 +20,7 @@ grid_jitter = function(x, y=NULL, nx=50, ny=NULL, tol=5, plotresults=TRUE, file=
     row_names = rownames(x)
     y = x[,2]
     x = x[,1]
-  } else if(is.null(y)) return("error: need y if x isn't a data.frame or matrix")
+  } else if(is.null(y)) return("Error: need y if x isn't a data.frame or matrix")
   
   # grid coordinates
   grid_x = grid_vector(x, nx-1)

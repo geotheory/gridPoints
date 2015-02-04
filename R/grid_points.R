@@ -10,6 +10,7 @@
 #' @export
 #' @example examples/grid_points_examples.R
 grid_points = function(x, y=NULL, z=NULL, grp=NULL, nx=50, ny=NULL, FUN=length){
+  suppressMessages(require(plyr))
   znames = colnames(z)
   if(is.null(ny)) ny = nx
   col_names = row_names = NULL
@@ -61,7 +62,7 @@ grid_points = function(x, y=NULL, z=NULL, grp=NULL, nx=50, ny=NULL, FUN=length){
     if(is.null(z)) {
       # z not provided so only aggregation possible is point count
       if(!identical(FUN, length) & !identical(FUN, 'length')) return("FUN must be 'length' if 'z' is not provided" )
-      output = plyr::count(dat[,1:2])  # summarise gridded coords
+      output = count(dat[,1:2])  # summarise gridded coords
       colnames(output) = c('x','y','n')
     } else{
       # single aggregation function

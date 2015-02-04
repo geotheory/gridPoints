@@ -11,6 +11,9 @@
 #' @export
 #' @example examples/grid_jitter_examples.R
 grid_jitter = function(x, y=NULL, nx=50, ny=NULL, tol=5, plotresults=TRUE, file=NULL, w=10, h=10){
+  suppressMessages(require(clue))
+  suppressMessages(require(fields))
+  suppressMessages(require(plyr))
   if(plotresults) suppressMessages(library(ggplot2))
   if(is.null(ny)) ny = nx
   col_names = row_names = NULL
@@ -34,7 +37,7 @@ grid_jitter = function(x, y=NULL, nx=50, ny=NULL, tol=5, plotresults=TRUE, file=
   trackmovers = rep(FALSE, nrow(dat)) # TRUE for reallocated points
   
   # summarise and filter points that overplot
-  sm = as.matrix(plyr::count(dat[,3:4]))                  # summarise gridded coords
+  sm = as.matrix(count(dat[,3:4]))                  # summarise gridded coords
   colnames(sm) = c('x','y','n')  
   op = sm[sm[,3] > 1, , drop=F]                     # filter overplots
   op = op[order(op[, 3], decreasing=T), , drop=F]   # rank by severit

@@ -43,31 +43,33 @@ grid_jitter = function(x, y=NULL, nx=50, ny=NULL, tol=5, plotresults=TRUE, file=
   op = op[order(op[, 3], decreasing=T), , drop=F]   # rank by severit
   tsf = function(n) formatC(n, width=3, flag="0")
   
-  # iterate through list of duplicates
-  for(i in 1:nrow(op)){
-    # p = c(op[i, 1], op[i, 2]) # current overplot coords
-    p = op[i, 1:2, drop=F]
-    
-    # list of vacant neighbouring cells
-    v = as.matrix(expand.grid(x = (p[1]-tol):(p[1]+tol), y = (p[2]-tol):(p[2]+tol)))
-    v = subset(v, fields::rdist(p, v)[1,] < tol)      # displacement limit   
-    fil = rowSums(outer(v[,1], dat[,3], "==") & outer(v[,2], dat[,4], "==")) == 0
-    v = v[fil, , drop=F]  # filter non-vacant cells
-    v = rbind(v, p)       # re-append origin
-    
-    # abort if insufficient local vacancies
-    if(nrow(v) < op[i,3]) {
-      cat("Sorry, insufficient vacant neighbouring cells for point-cell reallocation.\nTry again with bigger grid (nx/ny) or higher displacement tolerance (tol)")
-      return()
+  if(nrow(op) != 0){
+    # iterate through list of duplicates
+    for(i in 1:nrow(op)){
+      # p = c(op[i, 1], op[i, 2]) # current overplot coords
+      p = op[i, 1:2, drop=F]
+      
+      # list of vacant neighbouring cells
+      v = as.matrix(expand.grid(x = (p[1]-tol):(p[1]+tol), y = (p[2]-tol):(p[2]+tol)))
+      v = subset(v, fields::rdist(p, v)[1,] < tol)      # displacement limit   
+      fil = rowSums(outer(v[,1], dat[,3], "==") & outer(v[,2], dat[,4], "==")) == 0
+      v = v[fil, , drop=F]  # filter non-vacant cells
+      v = rbind(v, p)       # re-append origin
+      
+      # abort if insufficient local vacancies
+      if(nrow(v) < op[i,3]) {
+        cat("Sorry, insufficient vacant neighbouring cells for point-cell reallocation.\nTry again with bigger grid (nx/ny) or higher displacement tolerance (tol)")
+        return()
+      }
+      
+      # subset data and allocate to neighbourhood using Hungarian algorithm
+      dat_set = dat[dat[,3] == p[1] & dat[,4] == p[2], ]
+      dist_mx = fields::rdist(dat_set[, 1:2, drop=F], v)
+      soln = clue::solve_LSAP(dist_mx)
+      stay = match(nrow(v), soln) # point remaining in centroid cell
+      trackmovers[dat_set[-stay, 5]] = TRUE
+      for(j in 1:2) dat[dat_set[,5], j+2] = v[soln, j]
     }
-    
-    # subset data and allocate to neighbourhood using Hungarian algorithm
-    dat_set = dat[dat[,3] == p[1] & dat[,4] == p[2], ]
-    dist_mx = fields::rdist(dat_set[, 1:2, drop=F], v)
-    soln = clue::solve_LSAP(dist_mx)
-    stay = match(nrow(v), soln) # point remaining in centroid cell
-    trackmovers[dat_set[-stay, 5]] = TRUE
-    for(j in 1:2) dat[dat_set[,5], j+2] = v[soln, j]
   }
   
   dists = sqrt((dat[,1] - dat[,3])^2 + (dat[,2] - dat[,4])^2)
@@ -100,7 +102,8 @@ grid_jitter = function(x, y=NULL, nx=50, ny=NULL, tol=5, plotresults=TRUE, file=
       geom_point(data=displac, aes(x0, y0), col='blue', size=1, shape=4) +
       geom_point(data=displac, aes(x, y), size=1, col='red', alpha=.7, shape=15)
     
-    plot4 = plot34 + labs(title='Points reallocated to new cells') +
+    plot4 = plot34 + labs(title='Points reallocated to new cells')
+    if(nrow(relocat) != 0) plot4 = plot4 +
       geom_segment(data=relocat, aes(x0, y0, xend=x, yend=y), col='red', alpha=.5, size=.4) +
       geom_point(data=relocat, aes(x0, y0), col='blue', size=1, shape=4) +
       geom_point(data=relocat, aes(x, y), size=1, col='red', alpha=.7, shape=15)

@@ -51,9 +51,9 @@ d5 = data.frame(x=state.center$x, y=state.center$y, id=state.abb)
 d5j = grid_jitter(d5[,1:2], nx=10, ny=8, tol=3, plotresults=T)
 cols = sample(colorRampPalette(c('darkblue','blue','lightblue'))(50))
 par(mai=rep(.6,4), mfrow=c(1,2))
-plot(d5[,1:2], pch=15, cex=3, col=cols, asp=2.5, xlab=NA, ylab=NA)
+plot(d5[,1:2], pch=15, cex=2.5, col=cols, asp=2.5, xlab=NA, ylab=NA)
 text(d5[,1:2], labels=state.abb, col='white', cex=.7)
-plot(d5j, pch=15, cex=3, col=cols, asp=2.5, xlab=NA, ylab=NA)
+plot(d5j, pch=15, cex=2.5, col=cols, asp=2.5, xlab=NA, ylab=NA)
 text(d5j, labels=d5$id, col='white', cex=.7)
 
 # 6. to illuste cell reallocation 

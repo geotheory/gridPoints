@@ -1,7 +1,7 @@
 Package: gridPoints
 Type: Package
 Title: Functions for gridding point data
-Version: 0.1
+Version: 0.2
 Date: 2015-02-02
 Author: Robin Edward
 Maintainer: Robin Edwards <geotheory1@gmail.com>

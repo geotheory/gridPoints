@@ -12,7 +12,7 @@ Package offers 2 functions to grid point data:  grid_points() is a flexible data
 \tabular{ll}{
 Package: \tab gridPoints\cr
 Type: \tab Package\cr
-Version: \tab 0.1\cr
+Version: \tab 0.2\cr
 Date: \tab 2015-02-02\cr
 License: \tab GPL-2\cr
 }

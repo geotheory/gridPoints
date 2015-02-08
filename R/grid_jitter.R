@@ -40,7 +40,10 @@ grid_jitter = function(x, y=NULL, nx=50, ny=NULL, tol=5, plotresults=TRUE, file=
   dm_temp[dm_temp > tol] = NA
   drop.rows = colSums(is.na(dm_temp)) < nrow(dm_temp)
   dist.mat = dist.mat[, drop.rows]
-  if(ncol(dist.mat) < nrow(dist.mat)) return("Insufficient grid to accomodate points\nTry again with larger grid (nx/ny) or tol")
+  if(ncol(dist.mat) < nrow(dist.mat)){
+    cat("Insufficient grid to accomodate points\nTry again with larger grid (nx/ny) or tol\n")
+    return()
+  }
   grd_u = grd_u[drop.rows, ]
   grd = grd[drop.rows, ]
   

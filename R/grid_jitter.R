@@ -39,8 +39,8 @@ grid_jitter = function(x, y=NULL, nx=50, ny=NULL, tol=5, plotresults=TRUE, file=
   dm_temp = dist.mat
   dm_temp[dm_temp > tol] = NA
   drop.rows = colSums(is.na(dm_temp)) < nrow(dm_temp)
-  if(ncol(dist.mat) < nrow(dist.mat)) return("Insufficient grid to accomodate points\nTry again with larger grid (nx/ny) or tol")
   dist.mat = dist.mat[, drop.rows]
+  if(ncol(dist.mat) < nrow(dist.mat)) return("Insufficient grid to accomodate points\nTry again with larger grid (nx/ny) or tol")
   grd_u = grd_u[drop.rows, ]
   grd = grd[drop.rows, ]
   

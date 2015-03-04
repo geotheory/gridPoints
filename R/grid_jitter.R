@@ -1,5 +1,5 @@
 #' Remove over-plotting by gridding point data intelligently
-#' @description Data jittering reduces overplotting by adding small variances to values. gridJitter removes it entirely by fitting points to a custom grid and then reallocating duplicate points to the nearest vacant cell within a maximum tolerance threshold.  If no vacant cells are available the function will abort.
+#' @description Data jittering reduces overplotting by adding small variances to values.  grid_jitter removes it entirely by fitting points to a custom grid.  This function applies Hungarian algorithm to match entire points set to whole the grid.  By contrast grid_jitter2 applies Hungarian with small area constraints.  It works well for smaller grids and point sets, but will slow considerably with larger sets.
 #' @param x Numeric vector or 2 column matrix or data.frame of data points to plot
 #' @param y Numeric vector, y coordinates matching x (if a vector)
 #' @param nx/ny Numeric, values for the grid dimensions

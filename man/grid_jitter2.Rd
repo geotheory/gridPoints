@@ -5,16 +5,16 @@
 \title{Remove over-plotting by gridding point data intelligently}
 \usage{
 grid_jitter2(x, y = NULL, nx = 50, ny = NULL, tol = 5,
-  plotresults = TRUE, file = NULL, w = 10, h = 10)
+  plotresults = TRUE, file = NULL, w = 20, h = 20)
 }
 \arguments{
 \item{x}{Numeric vector or 2 column matrix or data.frame of data points to plot}
 
 \item{y}{Numeric vector, y coordinates matching x (if a vector)}
 
-\item{nx}{Numeric, values for the grid x dimension}
+\item{nx}{Numeric, grid x/y dimensions}
 
-\item{ny}{Numeric, values for the grid x dimension}
+\item{ny}{Numeric}
 
 \item{tol}{Numeric, the maximum distance overplotted points are allowed to move to the nearest vacant grid cell}
 
@@ -22,37 +22,37 @@ grid_jitter2(x, y = NULL, nx = 50, ny = NULL, tol = 5,
 
 \item{file}{String, if not NULL the result of plotresults will save to filename instead of rendering in R}
 
-\item{w}{Numeric, dimensions (inches) of plotresults if output to file (PDF)}
+\item{w}{Numeric, width/height (inches) of plotresults if output to file (PDF)}
 
-\item{h}{Numeric, dimensions (inches) of plotresults if output to file (PDF)}
+\item{h}{Numeric}
 }
 \value{
 A 2 column matrix of grid-jittered point coordinates
 }
 \description{
-Data jittering reduces overplotting by adding small variances to values.  grid_jitter2 removes it entirely by first rounding points to a custom grid and then reallocating individual duplicate points to the nearest vacant cell within a maximum tolerance threshold.  If no vacant cells are available the function will abort.  This function applies Hungarian algorithm with small area constraints.  By contrast grid_jitter applies Hungarian to match the entire points set to whole the grid.  This function is much faster than grid_jitter with bigger point sets and grids.
+Data jittering reduces overplotting by adding small variances to values.  grid_jitter2 removes it entirely by first rounding points to a custom grid and then reallocating individual duplicate points to the nearest vacant cells within a maximum tolerance threshold.  If no vacant cells are available the function will abort.  This function applies Hungarian algorithm with small area constraints.  (By contrast grid_jitter applies Hungarian to match the entire points set to the whole grid.)  This function is much faster than grid_jitter with bigger point sets and grids.
 }
 \examples{
 # 1. normal distribution
 d1 = data.frame(x = rnorm(500), y = rnorm(500))
-d1g = grid_jitter(d1, nx=75, ny=75, tol=5)
+d1g = grid_jitter2(d1, nx=75, ny=75, tol=5)
 
 # 2. faithful dataset
 d2 = faithful
-d2g = grid_jitter(d2, nx=50, ny=50, tol=3)
+d2g = grid_jitter2(d2, nx=50, ny=50, tol=3)
 
 # 3. mpg example
 d3 = ggplot2::mpg[,c(3,8)]
-d3g = grid_jitter(d3, nx=100, ny=100, tol=3)
+d3g = grid_jitter2(d3, nx=100, ny=100, tol=3)
 
 # 4. diamonds - carat vs price
-d4 = ggplot2::diamonds[sample(1:53940, 500),c('carat','price')]
-d4g = grid_jitter(d4, nx=300, ny=300, tol=2) # fails
-d4g = grid_jitter(d4, nx=300, ny=300, tol=5, plotresults=FALSE)
+d4 = ggplot2::diamonds[sample(1:53940, 1000),c('carat','price')]
+d4g = grid_jitter2(d4, nx=500, ny=500, tol=2) # fails
+d4g = grid_jitter2(d4, nx=500, ny=500, tol=5, plotresults=FALSE)
 
 # 5. US States
 d5 = data.frame(x=state.center$x, y=state.center$y, id=state.abb)
-d5j = grid_jitter(d5[,1:2], nx=10, ny=8, tol=3, plotresults=TRUE)
+d5j = grid_jitter2(d5[,1:2], nx=10, ny=8, tol=3, plotresults=TRUE)
 cols = sample(colorRampPalette(c('darkblue','blue','lightblue'))(50))
 par(mai=rep(.6,4), mfrow=c(1,2))
 plot(d5[,1:2], pch=15, cex=2.5, col=cols, asp=2.5, xlab=NA, ylab=NA)
@@ -61,7 +61,7 @@ plot(d5j, pch=15, cex=2.5, col=cols, asp=2.5, xlab=NA, ylab=NA)
 text(d5j, labels=d5$id, col='white', cex=.7)
 
 # 6. to illuste cell reallocation 
-d5 = data.frame(x = c(1,rep(50,500), 100), y = c(1,rep(50,500), 100))
-d5g = grid_jitter(d5, nx=30, ny=30, tol=15)
+d5 = data.frame(x = c(1,rep(50, 398), 100), y = c(1,rep(50, 398), 100))
+d5g = grid_jitter2(d5, nx=30, ny=30, tol=15)
 }
 

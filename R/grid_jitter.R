@@ -1,5 +1,5 @@
 #' Remove over-plotting by gridding point data intelligently
-#' @description Data jittering reduces overplotting by adding small variances to values.  grid_jitter removes it entirely by fitting points to a custom grid.  This function applies Hungarian algorithm to match entire points set to whole the grid.  By contrast grid_jitter2 applies Hungarian with small area constraints.  It works well for smaller grids and point sets, but will slow considerably with larger sets.
+#' @description Data jittering reduces overplotting by adding small variances to values.  grid_jitter removes it entirely by fitting points to a custom grid.  This function applies Hungarian algorithm to match entire points set to the whole grid.  (By contrast grid_jitter2 applies Hungarian with small area constraints.)  This function works well for smaller grids and point sets, but will slow considerably with larger sets.
 #' @param x Numeric vector or 2 column matrix or data.frame of data points to plot
 #' @param y Numeric vector, y coordinates matching x (if a vector)
 #' @param nx Numeric, grid x/y dimensions
@@ -12,10 +12,10 @@
 #' @return A 2 column matrix of grid-jittered point coordinates
 #' @export
 #' @example examples/grid_jitter_examples.R
-grid_jitter = function(x, y=NULL, nx=50, ny=NULL, tol=5, plotresults=TRUE, file=NULL, w=30, h=30){
-  suppressMessages(require(clue))
-  suppressMessages(require(fields))
+grid_jitter = function(x, y=NULL, nx=50, ny=NULL, tol=5, plotresults=TRUE, file=NULL, w=20, h=20){
   suppressMessages(require(plyr))
+  suppressMessages(require(fields))
+  suppressMessages(require(clue))
   if(plotresults) suppressMessages(library(ggplot2))
   if(class(x) == class(y) & class(x) == "numeric"){
     d0 = cbind(x, y)
@@ -36,7 +36,7 @@ grid_jitter = function(x, y=NULL, nx=50, ny=NULL, tol=5, plotresults=TRUE, file=
   grd_u = cbind(grd[,1]/xunit, grd[,2]/yunit)
   
   # use Hungarian algorithm to fit points to grid optimally
-  # first calculate distance matrix and filter to tolerance
+  # first calculate distance matrix (grid units) and filter to tolerance
   u0 = cbind(d0[,1]/xunit, d0[,2]/yunit)
   dist.mat = rdist(u0, grd_u)
   dm_temp = dist.mat

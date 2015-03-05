@@ -17,15 +17,15 @@ grid_jitter2 = function(x, y=NULL, nx=50, ny=NULL, tol=5, plotresults=TRUE, file
   suppressMessages(require(fields))
   suppressMessages(require(plyr))
   if(plotresults) suppressMessages(library(ggplot2))
+  if(class(x) == class(y) & class(x) == "numeric"){
+    d0 = cbind(x, y)
+    colnames(d0) = c('x','y')
+  } else{
+    if(class(x) %in% c("data.frame","matrix")){
+      d0 = x
+    } else return(message("'x' and 'y' input classes do not match up.\nUse either matrix/dataframe x or numeric x/y"))
+  }
   if(is.null(ny)) ny = nx
-  col_names = row_names = NULL
-  if(class(x) %in% c("data.frame","matrix")){
-    col_names = colnames(x)
-    if(is.null(col_names)) col_names = c('x','y')
-    row_names = rownames(x)
-    y = x[,2]
-    x = x[,1]
-  } else if(is.null(y)) return("Error: need y if x isn't a data.frame or matrix")
   
   # grid coordinates
   grid_x = grid_vector(x, nx-1)
@@ -39,9 +39,9 @@ grid_jitter2 = function(x, y=NULL, nx=50, ny=NULL, tol=5, plotresults=TRUE, file
   trackmovers = rep(FALSE, nrow(dat)) # TRUE for reallocated points
   
   # summarise and filter points that overplot
-  sm = as.matrix(count(dat[,3:4]))                  # summarise gridded coords
+  sm = as.matrix(count(dat[,3:4]))                         # summarise gridded coords
   colnames(sm) = c('x','y','n')  
-  op = sm[sm[,3] > 1, , drop=F]                     # filter overplots
+  op = sm[sm[,3] > 1, , drop=FALSE]                        # filter overplots
   op = op[order(op[, 3], decreasing=TRUE), , drop=FALSE]   # rank by severit
   tsf = function(n) formatC(n, width=3, flag="0")
   
@@ -55,18 +55,15 @@ grid_jitter2 = function(x, y=NULL, nx=50, ny=NULL, tol=5, plotresults=TRUE, file
       v = as.matrix(expand.grid(x = (p[1]-tol):(p[1]+tol), y = (p[2]-tol):(p[2]+tol)))
       v = subset(v, fields::rdist(p, v)[1,] < tol)      # displacement limit   
       fil = rowSums(outer(v[,1], dat[,3], "==") & outer(v[,2], dat[,4], "==")) == 0
-      v = v[fil, , drop=F]  # filter non-vacant cells
-      v = rbind(v, p)       # re-append origin
+      v = v[fil, , drop=FALSE]   # filter non-vacant cells
+      v = rbind(v, p)            # re-append origin
       
       # abort if insufficient local vacancies
-      if(nrow(v) < op[i,3]) {
-        cat("Sorry, insufficient vacant neighbouring cells for point-cell reallocation.\nTry again with bigger grid (nx/ny) or higher displacement tolerance (tol)")
-        return()
-      }
-      
+      if(nrow(v) < op[i,3]) return(message("Sorry, insufficient vacant neighbouring cells for point-cell reallocation.\nTry again with bigger grid (nx/ny) or higher displacement tolerance (tol)"))
+
       # subset data and allocate to neighbourhood using Hungarian algorithm
       dat_set = dat[dat[,3] == p[1] & dat[,4] == p[2], ]
-      dist_mx = fields::rdist(dat_set[, 1:2, drop=F], v)
+      dist_mx = fields::rdist(dat_set[, 1:2, drop=FALSE], v)
       soln = clue::solve_LSAP(dist_mx)
       stay = match(nrow(v), soln) # point remaining in centroid cell
       trackmovers[dat_set[-stay, 5]] = TRUE

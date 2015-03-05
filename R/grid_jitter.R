@@ -2,15 +2,17 @@
 #' @description Data jittering reduces overplotting by adding small variances to values.  grid_jitter removes it entirely by fitting points to a custom grid.  This function applies Hungarian algorithm to match entire points set to whole the grid.  By contrast grid_jitter2 applies Hungarian with small area constraints.  It works well for smaller grids and point sets, but will slow considerably with larger sets.
 #' @param x Numeric vector or 2 column matrix or data.frame of data points to plot
 #' @param y Numeric vector, y coordinates matching x (if a vector)
-#' @param nx/ny Numeric, values for the grid dimensions
+#' @param nx Numeric, grid x/y dimensions
+#' @param ny Numeric
 #' @param tol Numeric, the maximum distance overplotted points are allowed to move to the nearest vacant grid cell
 #' @param plotresults Logical, output plots to illustrate point displacements and cell-reallocations
 #' @param file String, if not NULL the result of plotresults will save to filename instead of rendering in R
-#' @param w/h Numeric, dimensions (inches) of plotresults if output to file (PDF)
+#' @param w Numeric, width/height (inches) of plotresults if output to file (PDF)
+#' @param h Numeric
 #' @return A 2 column matrix of grid-jittered point coordinates
 #' @export
 #' @example examples/grid_jitter_examples.R
-grid_jitter = function(x, y=NULL, nx=50, ny=NULL, tol=5, plotresults=TRUE, file=NULL, w=10, h=10){
+grid_jitter = function(x, y=NULL, nx=50, ny=NULL, tol=5, plotresults=TRUE, file=NULL, w=30, h=30){
   suppressMessages(require(clue))
   suppressMessages(require(fields))
   suppressMessages(require(plyr))
@@ -21,30 +23,28 @@ grid_jitter = function(x, y=NULL, nx=50, ny=NULL, tol=5, plotresults=TRUE, file=
   } else{
     if(class(x) %in% c("data.frame","matrix")){
       d0 = x
-    } else return("'x' and 'y' input classes do not match up.\nUse either matrix/dataframe x or numeric x/y")
+    } else return(message("'x' and 'y' input classes do not match up.\nUse either matrix/dataframe x or numeric x/y"))
   }
   if(is.null(ny)) ny = nx
 
   # auto grid
-  xran = range(d0[,1]);         yran = range(d0[,2])
-  xunit = diff(xran) / nx; yunit = diff(yran) / ny
+  xran = range(d0[,1]);       yran = range(d0[,2])
+  xunit = diff(xran) / nx;    yunit = diff(yran) / ny
   xseq = seq(xran[1]-xunit*tol, xran[2]+xunit*tol, length=nx+tol*2)
   yseq = seq(yran[1]-yunit*tol, yran[2]+yunit*tol, length=ny+tol*2)
   grd = as.matrix(expand.grid(x = xseq, y = yseq))
   grd_u = cbind(grd[,1]/xunit, grd[,2]/yunit)
   
   # use Hungarian algorithm to fit points to grid optimally
+  # first calculate distance matrix and filter to tolerance
   u0 = cbind(d0[,1]/xunit, d0[,2]/yunit)
   dist.mat = rdist(u0, grd_u)
   dm_temp = dist.mat
   dm_temp[dm_temp > tol] = NA
   drop.rows = colSums(is.na(dm_temp)) < nrow(dm_temp)
   dist.mat = dist.mat[, drop.rows]
-  if(ncol(dist.mat) < nrow(dist.mat)){
-    cat("Insufficient grid to accomodate points\nTry again with larger grid (nx/ny) or tol\n")
-    return()
-  }
-  grd_u = grd_u[drop.rows, ]
+  if(ncol(dist.mat) < nrow(dist.mat)) return(message("Insufficient grid to accomodate points\nTry again with larger grid (nx/ny) or tol\n"))
+  # grd_u = grd_u[drop.rows, ]
   grd = grd[drop.rows, ]
   
   hungarian.solution = solve_LSAP(dist.mat)
@@ -59,7 +59,7 @@ grid_jitter = function(x, y=NULL, nx=50, ny=NULL, tol=5, plotresults=TRUE, file=
       "| Y-axis:", round((max(d0[,2]) - min(d0[,2]))/ny, 3), "\n")
   
   # plots to verify processes undertaken
-  if(plotresults) plot_results(d0, d1, dists, file, filepath)
+  if(plotresults) plot_results(d0, d1, dists, file, w, h)
   
   dimnames(d1) = dimnames(d0)
   return(d1)

@@ -1,4 +1,4 @@
-plot_results = function(dat0, dat1, dists, file, filepath){
+plot_results = function(dat0, dat1, dists, file=NULL, w, h){
   dat0 = data.frame(dat0)
   dat1 = data.frame(dat1)
   names(dat0) = c('x','y')
@@ -22,7 +22,7 @@ plot_results = function(dat0, dat1, dists, file, filepath){
   plot4 = ggplot(data.frame(d=dists)) + geom_density(aes(x=d), fill='grey') + thm +
     labs(title='Displacement summary', x = "distance (grid units)")
   
-  if(!is.null(file)) pdf(filepath, width=w, height=h)
+  if(!is.null(file)) pdf(file, width=w, height=h)
   gridExtra::grid.arrange(plot1, plot2, plot3, plot4, nrow=2, ncol = 2, main = NULL)
   if(!is.null(file)) dev.off()
 }

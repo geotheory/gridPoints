@@ -12,15 +12,19 @@ grid_jitter(x, y = NULL, nx = 50, ny = NULL, tol = 5,
 
 \item{y}{Numeric vector, y coordinates matching x (if a vector)}
 
+\item{nx}{Numeric, grid x/y dimensions}
+
+\item{ny}{Numeric}
+
 \item{tol}{Numeric, the maximum distance overplotted points are allowed to move to the nearest vacant grid cell}
 
 \item{plotresults}{Logical, output plots to illustrate point displacements and cell-reallocations}
 
 \item{file}{String, if not NULL the result of plotresults will save to filename instead of rendering in R}
 
-\item{nx/ny}{Numeric, values for the grid dimensions}
+\item{w}{Numeric, width/height (inches) of plotresults if output to file (PDF)}
 
-\item{w/h}{Numeric, dimensions (inches) of plotresults if output to file (PDF)}
+\item{h}{Numeric}
 }
 \value{
 A 2 column matrix of grid-jittered point coordinates
@@ -44,11 +48,11 @@ d3g = grid_jitter(d3, nx=100, ny=100, tol=3)
 # 4. diamonds - carat vs price
 d4 = ggplot2::diamonds[sample(1:53940, 500),c('carat','price')]
 d4g = grid_jitter(d4, nx=300, ny=300, tol=2) # fails
-d4g = grid_jitter(d4, nx=300, ny=300, tol=5, plotresults=F)
+d4g = grid_jitter(d4, nx=300, ny=300, tol=5, plotresults=FALSE)
 
 # 5. US States
 d5 = data.frame(x=state.center$x, y=state.center$y, id=state.abb)
-d5j = grid_jitter(d5[,1:2], nx=10, ny=8, tol=3, plotresults=T)
+d5j = grid_jitter(d5[,1:2], nx=10, ny=8, tol=3, plotresults=TRUE)
 cols = sample(colorRampPalette(c('darkblue','blue','lightblue'))(50))
 par(mai=rep(.6,4), mfrow=c(1,2))
 plot(d5[,1:2], pch=15, cex=2.5, col=cols, asp=2.5, xlab=NA, ylab=NA)

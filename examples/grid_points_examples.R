@@ -9,7 +9,7 @@ View(d)
 # point counts
 d_ag = grid_points(d, nx = 20, FUN=length)
 plot(d[,1:2], pch=16, cex=.3, col='red')
-symbols(d_ag[,1:2], squares=sqrt(d_ag$n), inches=.3, add = TRUE)
+symbols(d_ag[,1:2], squares=sqrt(d_ag$n), inches=.3, add=TRUE)
 
 # summarise variables
 grid_points(d[,1:2], z=d$temp, nx = 5, FUN=mean)

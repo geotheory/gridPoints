@@ -17,11 +17,12 @@ grid_jitter2 = function(x, y=NULL, nx=50, ny=NULL, tol=5, plotresults=TRUE, file
   suppressMessages(require(fields))
   suppressMessages(require(clue))
   if(plotresults) suppressMessages(library(ggplot2))
-  if(class(x) == class(y) & class(x) == "numeric"){
+  classx = class(x)[1]
+  if(classx == class(y) & classx == "numeric"){
     d0 = cbind(x, y)
     colnames(d0) = c('x','y')
   } else{
-    if(class(x) %in% c("data.frame","matrix")){
+    if(classx %in% c("data.frame","matrix","tbl_df")){
       d0 = x
     } else return(message("'x' and 'y' input classes do not match up.\nUse either matrix/dataframe x or numeric x/y"))
   }

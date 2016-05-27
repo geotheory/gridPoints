@@ -37,11 +37,11 @@ Maintainer: Robin Edwards <geotheory1@gmail.com>
 d = faithful
 
 # grid_points function
-d_ag1 = grid_points(d, nx = 20, FUN=length)
+grd1 = grid_points(d, nx = 20, FUN=length)
 plot(d[,1:2], pch=16, cex=.3, col='red')
-symbols(d_ag1[,1:2], squares=sqrt(d_ag1), inches=.3, add=T)
+symbols(grd1[,1:2], squares=sqrt(grd1$n), inches=.3, add=T)
 
 # grid_jitter function
-d_ag2 = grid_jitter(d1, nx=75, ny=75, tol=5)
-head(d_ag2)
+grd2 = grid_jitter(d, nx=75, ny=75, tol=5)
+head(grd1)
 }

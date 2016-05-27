@@ -23,6 +23,6 @@ plot_results = function(dat0, dat1, dists, file=NULL, w, h){
     labs(title='Displacement summary', x = "distance (grid units)")
   
   if(!is.null(file)) pdf(file, width=w, height=h)
-  gridExtra::grid.arrange(plot1, plot2, plot3, plot4, nrow=2, ncol = 2, main = NULL)
+  gridExtra::grid.arrange(grobs=list(plot1, plot2, plot3, plot4), nrow=2, ncol = 2, main = NULL)
   if(!is.null(file)) dev.off()
 }

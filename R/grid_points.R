@@ -14,7 +14,8 @@ grid_points = function(x, y=NULL, z=NULL, grp=NULL, nx=50, ny=NULL, FUN=length){
   znames = colnames(z)
   if(is.null(ny)) ny = nx
   col_names = row_names = NULL
-  if(class(x) %in% c("data.frame","matrix")){
+  classx = class(x)[1]
+  if(classx %in% c("data.frame","matrix","tbl_df")){
     col_names = colnames(x)
     if(is.null(col_names)) col_names = c('x','y')
     row_names = rownames(x)

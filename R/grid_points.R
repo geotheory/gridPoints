@@ -11,6 +11,7 @@
 #' @example examples/grid_points_examples.R
 grid_points = function(x, y=NULL, z=NULL, grp=NULL, nx=50, ny=NULL, FUN=length){
   suppressMessages(require(plyr))
+  x_orig = x
   znames = colnames(z)
   if(is.null(ny)) ny = nx
   col_names = row_names = NULL
@@ -22,8 +23,7 @@ grid_points = function(x, y=NULL, z=NULL, grp=NULL, nx=50, ny=NULL, FUN=length){
     y = x[,2]
     x = x[,1]
   } else if(is.null(y)){
-    cat("error: need y if x isn't a data.frame or matrix\n")
-    return()
+    return(message("error: need y if x isn't a data.frame or matrix\n"))
   }
   
   # grid coordinates
@@ -43,8 +43,7 @@ grid_points = function(x, y=NULL, z=NULL, grp=NULL, nx=50, ny=NULL, FUN=length){
     if(!is.null(ncol(z))){
       # z has columns so is a matrix or data.frame
       if(ncol(z) != length(FUN)) {
-        cat("If length(FUN)>1, 'z' must be a vector or matrix of matching width\n")
-        return()
+        return(message("If length(FUN)>1, 'z' must be a vector or matrix of matching width\n"))
       }
     } else{
       # z is single vector so duplicate it to apply to multiple functions
@@ -73,5 +72,6 @@ grid_points = function(x, y=NULL, z=NULL, grp=NULL, nx=50, ny=NULL, FUN=length){
   }
   output[[1]] = output[[1]] * grid_x$scl
   output[[2]] = output[[2]] * grid_y$scl
+  if("tbl_df" %in% class(x_orig)) output = as_data_frame(output)
   return(output)
 }

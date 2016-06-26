@@ -3,3 +3,4 @@
 export(grid_jitter)
 export(grid_jitter2)
 export(grid_points)
+export(grid_bars)

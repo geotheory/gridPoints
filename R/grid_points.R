@@ -9,69 +9,64 @@
 #' @return A data.frame of grid-jittered point coordinates with point counts and/or data aggregated accordinaly
 #' @export
 #' @example examples/grid_points_examples.R
-grid_points = function(x, y=NULL, z=NULL, grp=NULL, nx=50, ny=NULL, FUN=length){
-  suppressMessages(require(plyr))
+grid_points = function (x, y = NULL, z = NULL, grp = NULL, nx = 50, ny = NULL, FUN = length){
   x_orig = x
   znames = colnames(z)
-  if(is.null(ny)) ny = nx
+  if (is.null(ny)) 
+    ny = nx
   col_names = row_names = NULL
   classx = class(x)[1]
-  if(classx %in% c("data.frame","matrix","tbl_df")){
+  if (classx %in% c("data.frame", "matrix", "tbl_df")) {
     col_names = colnames(x)
-    if(is.null(col_names)) col_names = c('x','y')
+    if (is.null(col_names)) 
+      col_names = c("x", "y")
     row_names = rownames(x)
-    y = x[,2]
-    x = x[,1]
-  } else if(is.null(y)){
-    return(message("error: need y if x isn't a data.frame or matrix\n"))
+    y = x[, 2]
+    x = x[, 1]
   }
-  
-  # grid coordinates
-  grid_x = grid_vector(x, nx-1)
-  grid_y = grid_vector(y, ny-1)
-  
-  # collate rescaled and rescaled/gridded coords
-  dat = cbind(x  = grid_x$rnd, y  = grid_y$rnd)
-  
-  # aggregation factors
+  else if (is.null(y)) {
+    return(message("Error: need y if x isn't a data.frame or matrix\n"))
+  }
+  grid_x = grid_vector(x, nx - 1)
+  grid_y = grid_vector(y, ny - 1)
+  dat = cbind(x = grid_x$rnd, y = grid_y$rnd)
   agg_dat = data.frame(dat)
-  if(!is.null(grp)) agg_dat = cbind(agg_dat, grp)
-  agg_dat = as.list(agg_dat)
-  
-  if(length(FUN) > 1){
-    # multiple aggregate functions provided
-    if(!is.null(ncol(z))){
-      # z has columns so is a matrix or data.frame
-      if(ncol(z) != length(FUN)) {
+  if (!is.null(grp)) 
+    agg_dat = cbind(agg_dat, grp)
+  if (length(FUN) > 1) {
+    if (!is.null(ncol(z))) {
+      if (ncol(z) != length(FUN)) {
         return(message("If length(FUN)>1, 'z' must be a vector or matrix of matching width\n"))
       }
-    } else{
-      # z is single vector so duplicate it to apply to multiple functions
+    }
+    else {
       z = data.frame(replicate(length(FUN), z))
       names(z) = FUN
     }
     results = list()
-    for(i in 1:length(FUN)){
-      results[[i]] = aggregate(z[[i]], by = agg_dat, FUN=FUN[i])
+    for (i in 1:length(FUN)) {
+      results[[i]] = aggregate(z[[i]], by = as.list(agg_dat), FUN = FUN[i])
       names(results[[i]])[length(names(results[[i]]))] = names(z)[i]
     }
     output = results[[1]]
-    for(i in 2:length(results)) output = merge(output, results[[i]])
-  } else{
-    # only 1 aggregate function provided
-    if(is.null(z)) {
-      # z not provided so only aggregation possible is point count
-      if(!identical(FUN, length) & !identical(FUN, 'length')) return("FUN must be 'length' if 'z' is not provided" )
-      output = count(dat[,1:2])  # summarise gridded coords
-      colnames(output) = c('x','y','n')
-    } else{
-      # single aggregation function
-      output = aggregate(z, by = agg_dat, FUN=FUN)
-      if(is.null(ncol(z))) names(output)[ncol(output)] = 'z' # column name for vector z
+    for (i in 2:length(results)) output = merge(output, results[[i]])
+  }
+  else {
+    if (is.null(z)) {
+      if (!identical(FUN, length) & !identical(FUN, "length")) 
+        return("FUN must be 'length' if 'z' is not provided")
+      output = plyr::count(agg_dat)
+      colnames(output)[ncol(output)] = "count"
+    }
+    else {
+      output = aggregate(z, by = as.list(agg_dat), FUN = FUN)
+      if (is.null(ncol(z))) 
+        names(output)[ncol(output)] = "val"
     }
   }
   output[[1]] = output[[1]] * grid_x$scl
   output[[2]] = output[[2]] * grid_y$scl
-  if("tbl_df" %in% class(x_orig)) output = as_data_frame(output)
+  if ("tbl_df" %in% class(x_orig)) 
+    output = as_data_frame(output)
   return(output)
 }

@@ -29,7 +29,7 @@ grid_bars = function(x, FUN = sum, yscale = 1){
   # bar widths
   x$x1 = x$x0 = NA
   for(i in frame_heights$f){
-    f = x$f == i
+    f = x$f == i     # filter
     i0 = match(T,f)
     sel = i0:(i0 + length(f[f==T]) - 1)
     cumsums1 = cumsum(x$x_prop[sel])

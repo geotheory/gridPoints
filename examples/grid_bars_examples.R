@@ -8,3 +8,4 @@ if(require(dplyr)){
   ggplot(polys) + geom_polygon(aes(carat, price, group = id, fill = grp)) +
     labs(x = 'log10(carat)', y = 'log10(price)', fill = 'colour')
 }
+

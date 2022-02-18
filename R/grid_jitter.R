@@ -5,6 +5,7 @@
 #' @param nx Numeric, grid x/y dimensions
 #' @param ny Numeric
 #' @param tol Numeric, the maximum distance overplotted points are allowed to move to the nearest vacant grid cell
+#' @param bbox List, optional extent eg list(xlim = c(xmin, xmax), ylim = c(ymin, ymax))
 #' @param plotresults Logical, output plots to illustrate point displacements and cell-reallocations
 #' @param file String, if not NULL the result of plotresults will save to filename instead of rendering in R
 #' @param w Numeric, width/height (inches) of plotresults if output to file (PDF)
@@ -13,15 +14,18 @@
 #' @return A 2 column matrix of grid-jittered point coordinates
 #' @export
 #' @example examples/grid_jitter_examples.R
-grid_jitter = function(x, y, nx=50, ny=NULL, tol=5, plotresults=TRUE, file=NULL, w=20, h=20, verbose=TRUE){
+grid_jitter = function(x, y, nx=50, ny=NULL, tol=5, bbox = NULL,
+                       plotresults=TRUE, file=NULL, w=20, h=20, verbose=TRUE){
   
   if(class(x) == 'integer') x = as.double(x)
   if(class(y) == 'integer') y = as.double(y)
   d0 = data.frame(x = x, y = y)
   if(is.null(ny)) ny = nx
 
-  # auto grid
-  xran = range(d0[,1]);       yran = range(d0[,2])
+  # grid
+  if(is.null(bbox)){ xran = range(d0[,1]); yran = range(d0[,2])
+  } else { xran = bbox$xlim; yran = bbox$ylim }
+  
   xunit = diff(xran) / nx;    yunit = diff(yran) / ny
   xseq = seq(xran[1]-xunit*tol, xran[2]+xunit*tol, length=nx+tol*2)
   yseq = seq(yran[1]-yunit*tol, yran[2]+yunit*tol, length=ny+tol*2)

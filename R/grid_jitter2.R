@@ -38,7 +38,6 @@ grid_jitter2 = function(x, y, nx=50, ny=NULL, tol=5, plotresults=TRUE, file=NULL
   if(nrow(op) != 0){
     # iterate through list of duplicates
     for(i in 1:nrow(op)){
-      message(i)
       p = op[i, 1:2, drop=FALSE]
       
       # list of vacant neighbouring cells

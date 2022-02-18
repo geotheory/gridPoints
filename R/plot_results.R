@@ -1,4 +1,5 @@
 plot_results = function(dat0, dat1, dists, file=NULL, w, h){
+  require(ggplot2)
   dat0 = data.frame(dat0)
   dat1 = data.frame(dat1)
   names(dat0) = c('x','y')
